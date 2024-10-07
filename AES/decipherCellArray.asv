@@ -1,0 +1,20 @@
+function [decryptedCell,initCounters] = decipherCellArray(data,key,initCounter)
+    %% Preallocate a cell array for ciphered data and for counters
+    initCounters = cell(1,length(data));
+    decryptedCell = cell(1,length(data));
+    
+    initCounters{1} = initCounter;
+    
+    %% Cipher data and save counters
+    for i = 1 : length(data)
+        dataT = data{i};
+        [r,~] = size(dataT);
+        if r>1
+            dataT = dataT';
+        end
+        [decipherText,IC,LC] = AES_CTR_CC(dataT,key,initCounter);
+        initCounter = LC;
+        initCounters{i} = IC;
+        decryptedCell{i} = getArrayFromByteStream(uint8(decipherText));
+    end
+end
